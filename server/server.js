@@ -10,6 +10,10 @@ const WEBSERVER_PORT = process.env.WEBSERVER_PORT || 3030;
 app.use(bodyParer.json());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use((req, res, next) => {
+  console.log(req.method, req.path)
+  next();
+});
 
 app.post('/user', (req, res) => {
   const user = req.body;
@@ -19,9 +23,11 @@ app.post('/user', (req, res) => {
 });
 
 app.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
+  passport.authenticate('local', { failureFlash: 'login failure' }),
   function(req, res) {
-    res.send('login successful!!');
+    res.status(201)
+    // req.user.token
+    res.send(req.user)
   });
 
 // START SERVER
